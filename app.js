@@ -1,19 +1,21 @@
-const express = require('express');
-const app = express();
-const apiRoutes = require('./api');
+const express = require('express')
+const app = express()
+const api = require('./routes/api')
+const middleware = require('./middleware')
 
-app.use(express.json());
+// Apply CORS middleware
+app.use(middleware.cors)
 
-// Root route
-app.get('/', (req, res) => {
-  res.send('Welcome to Fullstack Prints');
-});
+// Serve static files from the "public" directory
+app.use(express.static('public'))
 
-// API routes
-app.use('/api', apiRoutes);
+// Parse JSON request bodies
+app.use(express.json())
 
-// Start server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
-});
+// Mount API routes
+app.use('/api', api)
+
+// Global error handler
+app.use(middleware.handleError)
+
+module.exports = app
